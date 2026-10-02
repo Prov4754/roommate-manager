@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>合租生活管家</title>
+<style>
+:root{
+  --primary:#5B7CFA; --primary-soft:#EEF2FF; --bg:#F4F6FB; --text:#1D2333;
+  --sub:#8A93A8; --line:#EDF0F7; --green:#12A05C; --red:#E5484D; --orange:#FF9F43;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;
+}
+#app{max-width:520px;margin:0 auto;padding-bottom:96px;min-height:100vh;position:relative}
+.topbar{
+  position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px 8px;background:rgba(244,246,251,.9);backdrop-filter:blur(10px);
+}
+.brand{font-weight:800;font-size:17px}
+.icon-btn{
+  border:none;background:#fff;width:38px;height:38px;border-radius:12px;font-size:16px;cursor:pointer;
+  box-shadow:0 2px 8px rgba(30,50,90,.08);display:inline-flex;align-items:center;justify-content:center;color:#4A5468;
+}
+/* hero */
+.hero{
+  margin:6px 14px 0;padding:20px;border-radius:22px;color:#fff;
+  background:linear-gradient(135deg,#5B7CFA,#7C5CFA 55%,#9D6BFA);
+  box-shadow:0 12px 26px rgba(91,124,250,.30);
+}
+.hero-sub{font-size:13px;opacity:.85}
+.hero-big{font-size:34px;font-weight:800;letter-spacing:-.5px;margin:6px 0 2px}
+.hero-label{font-size:13px;opacity:.85}
+.hero-chips{display:flex;gap:8px;margin-top:14px}
+.hero-chips span{background:rgba(255,255,255,.18);border-radius:10px;padding:5px 10px;font-size:12px}
+/* card */
+.card{background:#fff;border-radius:18px;padding:16px;margin:12px 14px;box-shadow:0 4px 16px rgba(30,50,90,.06)}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.card-head h3{margin:0;font-size:15px;font-weight:800}
+.link{font-size:13px;color:var(--sub);cursor:pointer}
+.hint{font-size:12px;color:var(--sub)}
+.empty{text-align:center;color:var(--sub);font-size:13px;padding:14px 0}
+/* rows */
+.row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:none}
+.row-emoji{width:36px;height:36px;border-radius:12px;background:#F4F6FB;display:flex;align-items:center;justify-content:center;font-size:17px;flex:0 0 auto}
+.row-main{flex:1;min-width:0}
+.row-title{font-size:14.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row-sub{font-size:12.5px;color:var(--sub);margin-top:1px}
+.av{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;font-size:15px;flex:0 0 auto}
+/* tx */
+.tx-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.tx-row:last-child{border-bottom:none}
+.tx-mid{flex:1;font-size:14px}
+.tx-mid .arrow{color:var(--sub);margin:0 3px}
+.tx-amt{font-weight:700;color:var(--primary);font-size:14.5px}
+/* buttons */
+.btn{border:none;border-radius:12px;padding:9px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn.sm{padding:7px 13px;font-size:13px}
+.btn.primary{background:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(91,124,250,.3)}
+.btn.ghost{background:#F0F3FA;color:#4A5468}
+.btn.danger{background:#FFECEC;color:var(--red)}
+.btn-mini{border:none;background:#F0F3FA;color:#4A5468;border-radius:9px;padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.btn-mini.done{background:#E3F7EE;color:var(--green)}
+.btn-mini.danger{background:#FFECEC;color:var(--red)}
+.page-head{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 2px}
+.page-head h2{margin:0;font-size:19px;font-weight:800}
+/* expense */
+.exp-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.exp-row:last-child{border-bottom:none}
+.exp-ico{width:38px;height:38px;border-radius:12px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;font-size:17px;flex:0 0 auto}
+.exp-main{flex:1;min-width:0}
+.exp-title{font-size:14.5px;font-weight:600}
+.exp-sub{font-size:12px;color:var(--sub);margin-top:2px}
+.exp-amt{font-weight:800;font-size:15px}
+.bal{font-size:13px;font-weight:700}
+.bal.pos{color:var(--green)} .bal.neg{color:var(--red)} .bal.zero{color:var(--sub)}
+/* chore */
+.week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.week-label{text-align:center}
+.week-label b{display:block;font-size:15px}
+.week-label span{font-size:12px;color:var(--sub)}
+.chore-act{display:flex;align-items:center;gap:8px}
+.rule{font-size:13px;color:#5A6478;background:#F8FAFE;border-radius:10px;padding:9px 12px;margin-bottom:8px;line-height:1.6}
+.rule:last-child{margin-bottom:0}
+/* item */
+.banner{margin:12px 14px 0;background:#FFF6E8;color:#B26B00;font-size:13px;font-weight:600;border-radius:14px;padding:12px 14px}
+.stepper{display:flex;align-items:center;gap:6px;background:#F4F6FB;border-radius:12px;padding:4px}
+.st-btn{border:none;background:#fff;width:26px;height:26px;border-radius:8px;font-size:15px;font-weight:700;color:#4A5468;cursor:pointer;line-height:1}
+.st-num{min-width:30px;text-align:center;font-weight:800;font-size:14px}
+.st-num.low{color:var(--red)}
+.log-row{display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 0;border-bottom:1px solid var(--line);color:#5A6478}
+.log-row:last-child{border-bottom:none}
+.log-row .pos{color:var(--green);font-weight:700}
+.log-row .neg{color:var(--red);font-weight:700}
+.log-time{margin-left:auto;color:#A9B1C4;font-size:12px}
+/* pact */
+.pact-card{border:1.5px solid var(--line);border-radius:14px;padding:13px;margin-bottom:10px}
+.pact-card:last-child{margin-bottom:0}
+.pact-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.tag{font-size:11.5px;background:var(--primary-soft);color:var(--primary);border-radius:8px;padding:2px 8px;font-weight:700}
+.tag.warn{background:#FFF1E6;color:#D97A00}
+.pact-progress{font-size:12px;color:var(--sub);font-weight:600}
+.pact-progress.ok{color:var(--green)}
+.pact-text{font-size:14px;line-height:1.6;margin-bottom:10px}
+.pact-avatars{display:flex;gap:6px;margin-bottom:9px}
+.av-dot{width:30px;height:30px;border-radius:50%;background:#EDF0F7;display:inline-flex;align-items:center;justify-content:center;font-size:14px;filter:grayscale(1);opacity:.45;cursor:pointer;transition:.15s}
+.av-dot.on{filter:none;opacity:1;box-shadow:0 2px 6px rgba(30,50,90,.15)}
+.pact-foot{display:flex;align-items:center;justify-content:space-between}
+.pact-line{font-size:13.5px;color:#4A5468;padding:5px 0;line-height:1.6}
+/* tabbar */
+.tabbar{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;
+  display:flex;background:#fff;border-top:1px solid #EDF0F7;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:60;
+}
+.tab{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:11px;color:#9AA3B7;font-family:inherit;cursor:pointer;padding:2px 0;font-weight:600}
+.tab i{font-style:normal;font-size:19px;line-height:1;filter:grayscale(1);opacity:.6;transition:.15s}
+.tab.active{color:var(--primary)}
+.tab.active i{filter:none;opacity:1;transform:translateY(-1px)}
+/* modal */
+#mask{position:fixed;inset:0;background:rgba(20,26,40,.45);display:none;align-items:flex-end;justify-content:center;z-index:100}
+#mask.show{display:flex}
+#modal{background:#fff;width:100%;max-width:520px;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+  max-height:88vh;overflow:auto;animation:up .22s ease}
+@keyframes up{from{transform:translateY(30px);opacity:.5}to{transform:none;opacity:1}}
+.modal-title{margin:0 0 16px;font-size:17px;font-weight:800}
+.field{display:block;margin-bottom:12px}
+.field>span{display:block;font-size:12.5px;color:var(--sub);margin-bottom:5px;font-weight:700}
+.field input,.field select,.field textarea{
+  width:100%;border:1.5px solid #E6EAF3;background:#FAFBFE;border-radius:11px;padding:10px 12px;
+  font-size:14.5px;font-family:inherit;color:var(--text);outline:none;transition:.15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary);background:#fff}
+.field-row{display:flex;gap:10px}
+.field-row .field{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;padding:7px 11px;border-radius:11px;background:#F4F6FB;
+  border:1.5px solid transparent;font-size:13px;cursor:pointer;font-weight:600;color:#5A6478}
+.chip input{display:none}
+.chip:has(input:checked){background:var(--primary-soft);border-color:var(--primary);color:var(--primary)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+.rm-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.rm-input{flex:1;border:1.5px solid #E6EAF3;background:#FAFBFE;border-radius:11px;padding:9px 12px;font-size:14px;font-family:inherit;outline:none}
+.rm-input:focus{border-color:var(--primary);background:#fff}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">🏠 合租生活管家</div>
+    <button class="icon-btn" onclick="openRoommateModal()" title="室友管理">⚙️</button>
+  </header>
+  <main id="view"></main>
+  <nav class="tabbar">
+    <button class="tab" data-tab="home"    onclick="go('home')"><i>🏠</i><span>首页</span></button>
+    <button class="tab" data-tab="expense" onclick="go('expense')"><i>💰</i><span>费用</span></button>
+    <button class="tab" data-tab="chore"   onclick="go('chore')"><i>🧹</i><span>值日</span></button>
+    <button class="tab" data-tab="item"    onclick="go('item')"><i>🧴</i><span>物品</span></button>
+    <button class="tab" data-tab="pact"    onclick="go('pact')"><i>📜</i><span>公约</span></button>
+  </nav>
+</div>
+
+<div id="mask" onclick="if(event.target===this)closeModal()"><div id="modal"></div></div>
+
+<script>
+/* ================= 常量与工具 ================= */
+const STORE = 'roommate_manager_v1';
+const PALETTE = ['#5B7CFA','#FF8FA3','#4ECDC4','#FFB74D','#A78BFA','#F97316','#34D399','#60A5FA'];
+const EMOJIS  = ['🐻','🐰','🐼','🦊','🐨','🐯','🦁','🐸','🐵','🐧','🦄','🐙','🐳','🐢'];
+const CAT_EMOJI = {'房租':'🏠','水电':'💡','燃气':'🔥','网络':'📶','日用':'🧴','食材':'🥬','聚餐':'🍲','其他':'🧾'};
+
+const $  = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const uid = p => (p||'') + Math.random().toString(36).slice(2,8);
+const pad = n => String(n).padStart(2,'0');
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => (Math.round((+n||0)*100)/100).toFixed(2);
+const catEmoji = c => CAT_EMOJI[c] || '🧾';
+
+const fmtDate = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const todayStr = (off=0) => { const d=new Date(); d.setDate(d.getDate()+(off||0)); return fmtDate(d); };
+const nowStamp = () => { const t=new Date(); return `${t.getMonth()+1}/${t.getDate()} ${pad(t.getHours())}:${pad(t.getMinutes())}`; };
+
+function weekStartDate(off=0){
+  const d = new Date(); d.setHours(0,0,0,0);
+  const wd = (d.getDay()+6)%7;              // 周一 = 0
+  d.setDate(d.getDate()-wd+(off||0)*7);
+  return d;
+}
+const weekKey = off => fmtDate(weekStartDate(off));
+function globalWeekIndex(off){
+  const anchor = new Date(2024,0,1);        // 2024-01-01 是周一
+  const diff = weekStartDate(off) - anchor;
+  return Math.round(diff / 604800000);
+}
+
+/* ================= 数据层 ================= */
+function defaultState(){
+  return {
+    roommates: [
+      {id:'r1', name:'小张', emoji:'🐻'},
+      {id:'r2', name:'小李', emoji:'🐰'},
+      {id:'r3', name:'小王', emoji:'🐼'},
+      {id:'r4', name:'小陈', emoji:'🦊'}
+    ],
+    expenses: [
+      {id:'e1', title:'本月房租',     amount:4800,  category:'房租', payerId:'r1', participants:['r1','r2','r3','r4'], date:todayStr(-12)},
+      {id:'e2', title:'水电燃气费',   amount:286.5, category:'水电', payerId:'r2', participants:['r1','r2','r3','r4'], date:todayStr(-8)},
+      {id:'e3', title:'厨房用品采购', amount:174.8, category:'日用', payerId:'r3', participants:['r1','r2','r3','r4'], date:todayStr(-5)},
+      {id:'e4', title:'周末火锅食材', amount:320,   category:'聚餐', payerId:'r4', participants:['r1','r2','r4'],      date:todayStr(-3)},
+      {id:'e5', title:'宽带续费',     amount:120,   category:'网络', payerId:'r1', participants:['r1','r2','r3','r4'], date:todayStr(-2)}
+    ],
+    tasks: [
+      {id:'t1', name:'扫地拖地',   emoji:'🧹'},
+      {id:'t2', name:'厨房清洁',   emoji:'🍳'},
+      {id:'t3', name:'卫生间清洁', emoji:'🚿'},
+      {id:'t4', name:'倒垃圾',     emoji:'🗑️'}
+    ],
+    choreDone: {},   // "weekKey|taskId" -> {by, at}
+    items: [
+      {id:'i1', name:'洗洁精', qty:1, unit:'瓶', threshold:1, emoji:'🧴'},
+      {id:'i2', name:'垃圾袋', qty:2, unit:'卷', threshold:2, emoji:'🛍️'},
+      {id:'i3', name:'卫生纸', qty:6, unit:'卷', threshold:3, emoji:'🧻'},
+      {id:'i4', name:'洗衣液', qty:0.5, unit:'瓶', threshold:1, emoji:'🧺'},
+      {id:'i5', name:'灯泡',   qty:3, unit:'个', threshold:1, emoji:'💡'}
+    ],
+    itemLog: [],
+    pacts: [
+      {id:'p1', text:'晚上 23:00 后保持安静，看视频戴耳机', cat:'噪音', by:'r1', agreed:['r1','r2','r3']},
+      {id:'p2', text:'做完饭立刻清洗锅碗，油烟机每周擦一次', cat:'卫生', by:'r3', agreed:['r1','r2','r3','r4']},
+      {id:'p3', text:'朋友留宿需提前一天在群里说一声',       cat:'访客', by:'r2', agreed:['r1','r2']}
+    ],
+    weekOffset: 0
+  };
+}
+
+let state = loadState();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE);
+    if(raw){
+      const s = JSON.parse(raw);
+      return Object.assign(defaultState(), s);
+    }
+  }catch(e){ console.warn('读取本地数据失败', e); }
+  return defaultState();
+}
+function save(){
+  try{ localStorage.setItem(STORE, JSON.stringify(state)); }
+  catch(e){ console.warn('保存失败', e); }
+}
+
+/* ================= 计算逻辑 ================= */
+function nameOf(id){ const r = state.roommates.find(x=>x.id===id); return r ? r.name : '已移除'; }
+function colorOf(id){ const i = state.roommates.findIndex(r=>r.id===id); return PALETTE[(i<0?0:i)%PALETTE.length]; }
+function avatarHTML(id){
+  const r = state.roommates.find(x=>x.id===id);
+  if(!r) return `<span class="av" style="background:#C9CFDD">?</span>`;
+  return `<span class="av" style="background:${colorOf(id)}">${r.emoji}</span>`;
+}
+
+/* 每个人：已垫付 - 应分摊 = 结余 */
+function computeBalances(){
+  const bal = {};
+  state.roommates.forEach(r => bal[r.id] = 0);
+  state.expenses.forEach(e => {
+    let parts = (e.participants||[]).filter(p => bal[p] !== undefined);
+    if(!parts.length) parts = state.roommates.map(r=>r.id);
+    if(!parts.length) return;
+    const share = (+e.amount||0) / parts.length;
+    if(bal[e.payerId] !== undefined) bal[e.payerId] += (+e.amount||0);
+    parts.forEach(p => bal[p] -= share);
+  });
+  return bal;
+}
+
+/* 贪心算法：最少转账笔数 */
+function settle(bal){
+  const debtors = [], creditors = [];
+  Object.entries(bal).forEach(([id,v]) => {
+    if(v < -0.005) debtors.push({id, amt:-v});
+    else if(v > 0.005) creditors.push({id, amt:v});
+  });
+  debtors.sort((a,b)=>b.amt-a.amt);
+  creditors.sort((a,b)=>b.amt-a.amt);
+  const tx = [];
+  let i=0, j=0;
+  while(i<debtors.length && j<creditors.length){
+    const amt = Math.min(debtors[i].amt, creditors[j].amt);
+    if(amt > 0.005) tx.push({from:debtors[i].id, to:creditors[j].id, amt});
+    debtors[i].amt -= amt; creditors[j].amt -= amt;
+    if(debtors[i].amt < 0.005) i++;
+    if(creditors[j].amt < 0.005) j++;
+  }
+  return tx;
+}
+
+/* 值日轮换 */
+function assigneeFor(taskIndex, weekOff){
+  const n = state.roommates.length;
+  if(!n) return null;
+  const gi = globalWeekIndex(weekOff);
+  return state.roommates[(((gi + taskIndex) % n) + n) % n];
+}
+const choreKey = (weekOff, tid) => weekKey(weekOff) + '|' + tid;
+
+/* ================= 路由 & 渲染 ================= */
+let tab = 'home';
+const VIEWS = {};
+
+function go(t){
+  if(tab === t){ window.scrollTo({top:0,behavior:'smooth'}); return; }
+  tab = t; render(); window.scrollTo(0,0);
+}
+function render(){
+  $('#view').innerHTML = VIEWS[tab]();
+  $$('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+}
+
+/* ---------- 首页 ---------- */
+VIEWS.home = function(){
+  const bal = computeBalances();
+  const txs = settle(bal);
+  const month = fmtDate(new Date()).slice(0,7);
+  const monthExp = state.expenses.filter(e => (e.date||'').slice(0,7) === month);
+  const total = monthExp.reduce((s,e)=>s+(+e.amount||0),0);
+  const per = state.roommates.length ? total/state.roommates.length : 0;
+  const need = state.items.filter(i => i.qty <= i.threshold);
+  const d = new Date();
+  const wd = '日一二三四五六'[d.getDay()];
+  const wk = state.weekOffset;
+
+  const txHTML = txs.length ? txs.slice(0,4).map(t => `
+    <div class="tx-row">
+      ${avatarHTML(t.from)}
+      <div class="tx-mid">${esc(nameOf(t.from))} <span class="arrow">→</span> ${esc(nameOf(t.to))}</div>
+      <div class="tx-amt">¥${money(t.amt)}</div>
+    </div>`).join('') : `<div class="empty">账目已结清，暂时不用转账 🎉</div>`;
+
+  const choreHTML = !state.roommates.length ? `<div class="empty">先去右上角 ⚙️ 添加室友</div>` :
+    state.tasks.map((t,i) => {
+      const a = assigneeFor(i, wk);
+      const done = !!state.choreDone[choreKey(wk, t.id)];
+      return `<div class="row">
+        <div class="row-emoji">${t.emoji}</div>
+        <div class="row-main">
+          <div class="row-title">${esc(t.name)}</div>
+          <div class="row-sub">${done ? '✅ 本周已完成' : '待完成'}</div>
+        </div>
+        ${a ? avatarHTML(a.id) : ''}
+      </div>`;
+    }).join('');
+
+  const itemHTML = need.length ? need.map(i => `
+    <div class="row">
+      <div class="row-emoji">${i.emoji}</div>
+      <div class="row-main">
+        <div class="row-title">${esc(i.name)}</div>
+        <div class="row-sub">仅剩 ${i.qty}${i.unit} · 警戒线 ${i.threshold}${i.unit}</div>
+      </div>
+      <span class="tag warn">待补货</span>
+    </div>`).join('') : `<div class="empty">公共物品库存充足 ✅</div>`;
+
+  const pactHTML = state.pacts.length
+    ? state.pacts.slice(0,3).map(p => `<div class="pact-line">· ${esc(p.text)}</div>`).join('')
+    : `<div class="empty">还没有公约，快去制定一条吧</div>`;
+
+  return `
+  <div class="hero">
+    <div class="hero-sub">${d.getMonth()+1}月${d.getDate()}日 星期${wd}</div>
+    <div class="hero-big">¥${money(total)}</div>
+    <div class="hero-label">本月公共支出 · 人均 ¥${money(per)}</div>
+    <div class="hero-chips">
+      <span>👥 ${state.roommates.length} 位室友</span>
+      <span>📝 ${monthExp.length} 笔账单</span>
+      <span>🧹 ${state.tasks.length} 项值日</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>💸 结算建议</h3><span class="link" onclick="go('expense')">全部明细 ›</span></div>
+    ${txHTML}
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>🧹 本周值日</h3><span class="link" onclick="go('chore')">排班表 ›</span></div>
+    ${choreHTML}
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>🧴 公共物品</h3><span class="link" onclick="go('item')">管理 ›</span></div>
+    ${itemHTML}
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>📜 室友公约</h3><span class="link" onclick="go('pact')">全部 ›</span></div>
+    ${pactHTML}
+  </div>
+  `;
+};
+
+/* ---------- 费用 ---------- */
+VIEWS.expense = function(){
+  const bal = computeBalances();
+  const txs = settle(bal);
+  const list = [...state.expenses].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+
+  const balHTML = state.roommates.length ? state.roommates.map(r => {
+    const v = bal[r.id] || 0;
+    const cls = v > 0.005 ? 'pos' : (v < -0.005 ? 'neg' : 'zero');
+    const txt = v > 0.005 ? `应收 ¥${money(v)}` : (v < -0.005 ? `应付 ¥${money(-v)}` : '已结清');
+    return `<div class="row">${avatarHTML(r.id)}
+      <div class="row-main"><div class="row-title">${esc(r.name)}</div></div>
+      <span class="bal ${cls}">${txt}</span></div>`;
+  }).join('') : `<div class="empty">暂无室友</div>`;
+
+  const txHTML = txs.length ? txs.map(t => `
+    <div class="tx-row">
+      ${avatarHTML(t.from)}
+      <div class="tx-mid">${esc(nameOf(t.from))} <span class="arrow">→</span> ${esc(nameOf(t.to))}</div>
+      <div class="tx-amt">¥${money(t.amt)}</div>
+    </div>`).join('') : `<div class="empty">已结清 🎉</div>`;
+
+  const listHTML = list.length ? list.map(e => `
+    <div class="exp-row" onclick="openExpenseModal('${e.id}')">
+      <div class="exp-ico">${catEmoji(e.category)}</div>
+      <div class="exp-main">
+        <div class="exp-title">${esc(e.title)}</div>
+        <div class="exp-sub">${e.date} · ${esc(nameOf(e.payerId))}垫付 · ${(e.participants||[]).length}人分摊</div>
+      </div>
+      <div class="exp-amt">¥${money(e.amount)}</div>
+    </div>`).join('') : `<div class="empty">还没有账单，点右上角记一笔</div>`;
+
+  return `
+  <div class="page-head">
+    <h2>费用 AA 分摊</h2>
+    <button class="btn primary sm" onclick="openExpenseModal()">＋ 记一笔</button>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>💰 各自结余</h3><span class="hint">垫付 − 应分摊</span></div>
+    ${balHTML}
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>🔁 最优转账方案</h3><span class="hint">仅需 ${txs.length} 笔</span></div>
+    ${txHTML}
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>📋 账单记录</h3><span class="hint">共 ${list.length} 笔</span></div>
+    ${listHTML}
+  </div>
+  `;
+};
+
+/* ---------- 值日 ---------- */
+VIEWS.chore = function(){
+  const wk = state.weekOffset;
+  const ws = weekStartDate(wk), we = new Date(ws); we.setDate(we.getDate()+6);
+  const label = `${ws.getMonth()+1}/${ws.getDate()} — ${we.getMonth()+1}/${we.getDate()}`;
+  const tag = wk === 0 ? '本周' : (wk < 0 ? '历史周' : '未来周');
+
+  const rows = state.tasks.length ? state.tasks.map((t,i) => {
+    const a = assigneeFor(i, wk);
+    const rec = state.choreDone[choreKey(wk, t.id)];
+    return `<div class="row">
+      <div class="row-emoji">${t.emoji}</div>
+      <div class="row-main">
+        <div class="row-title">${esc(t.name)}</div>
+        <div class="row-sub">负责人：${a ? esc(a.name) : '—'}</div>
+      </div>
+      <div class="chore-act">
+        ${a ? avatarHTML(a.id) : ''}
+        <button class="btn-mini ${rec?'done':''}" onclick="toggleChore('${t.id}')">
+          ${rec ? '✓ 已完成' : '打卡'}
+        </button>
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty">还没有值日任务，点右上角添加</div>`;
+
+  const order = state.roommates.length
+    ? state.roommates.map(r => r.emoji + r.name).join(' → ')
+    : '—';
+
+  return `
+  <div class="page-head">
+    <h2>清洁值日排班</h2>
+    <button class="btn ghost sm" onclick="openTaskModal()">＋ 任务</button>
+  </div>
+
+  <div class="card">
+    <div class="week-nav">
+      <button class="icon-btn" onclick="shiftWeek(-1)">‹</button>
+      <div class="week-label"><b>${label}</b><span>${tag}</span></div>
+      <button class="icon-btn" onclick="shiftWeek(1)">›</button>
+    </div>
+    ${rows}
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>📌 轮值规则</h3></div>
+    <div class="rule">每个任务按室友顺序 <b>每周轮换一次</b>，做到人人平等、不重不漏。</div>
+    <div class="rule">当前轮值顺序：${esc(order)}</div>
+    <div class="rule">本周未打卡的任务会在首页持续提醒。</div>
+  </div>
+  `;
+};
+
+/* ---------- 物品 ---------- */
+VIEWS.item = function(){
+  const items = [...state.items].sort((a,b) => {
+    const ra = a.threshold ? a.qty/a.threshold : 9;
+    const rb = b.threshold ? b.qty/b.threshold : 9;
+    return ra - rb;
+  });
+  const need = state.items.filter(i => i.qty <= i.threshold).length;
+  const logs = [...state.itemLog].slice(-8).reverse();
+
+  const listHTML = items.length ? items.map(i => {
+    const low = i.qty <= i.threshold;
+    return `<div class="row">
+      <div class="row-emoji">${i.emoji}</div>
+      <div class="row-main" onclick="openItemEditModal('${i.id}')" style="cursor:pointer">
+        <div class="row-title">${esc(i.name)}</div>
+        <div class="row-sub">${low ? `低于警戒线（${i.threshold}${i.unit}）` : '库存正常'}</div>
+      </div>
+      <div class="stepper">
+        <button class="st-btn" onclick="changeQty('${i.id}',-1)">−</button>
+        <span class="st-num ${low?'low':''}">${i.qty}</span>
+        <button class="st-btn" onclick="changeQty('${i.id}',1)">＋</button>
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty">还没有登记公共物品</div>`;
+
+  const logHTML = logs.length ? logs.map(l => `
+    <div class="log-row">
+      <span>${esc(l.name)}</span>
+      <span class="${l.delta>0?'pos':'neg'}">${l.delta>0?'+':''}${l.delta}</span>
+      <span class="log-time">${l.time}</span>
+    </div>`).join('') : `<div class="empty">暂无变动记录</div>`;
+
+  return `
+  <div class="page-head">
+    <h2>公共物品登记</h2>
+    <button class="btn primary sm" onclick="openItemModal()">＋ 物品</button>
+  </div>
+
+  ${need ? `<div class="banner">⚠️ 有 ${need} 件公共物品需要补货，记得在群里说一声</div>` : ''}
+
+  <div class="card">
+    <div class="card-head"><h3>📦 库存清单</h3><span class="hint">点名称可编辑</span></div>
+    ${listHTML}
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h3>🧾 最近变动</h3></div>
+    ${logHTML}
+  </div>
+  `;
+};
+
+/* ---------- 公约 ---------- */
+VIEWS.pact = function(){
+  const total = state.roommates.length || 1;
+  const cards = state.pacts.length ? state.pacts.map(p => {
+    const agreedList = (p.agreed||[]).filter(id => state.roommates.some(r => r.id === id));
+    const agreed = agreedList.length;
+    const all = agreed >= total;
+    const dots = state.roommates.map(r => {
+      const on = agreedList.includes(r.id);
+      return `<span class="av-dot ${on?'on':''}" style="${on?'background:'+colorOf(r.id):''}"
+        onclick="toggleAgree('${p.id}','${r.id}')" title="${esc(r.name)}">${r.emoji}</span>`;
+    }).join('');
+    return `<div class="pact-card">
+      <div class="pact-top">
+        <span class="tag">${esc(p.cat||'其他')}</span>
+        <span class="pact-progress ${all?'ok':''}">${all ? '全员同意 ✓' : agreed + '/' + total + ' 已同意'}</span>
+      </div>
+      <div class="pact-text">${esc(p.text)}</div>
+      <div class="pact-avatars">${dots}</div>
+      <div class="pact-foot">
+        <span class="hint">由 ${esc(nameOf(p.by))} 发起 · 点头像表示同意</span>
+        <button class="btn-mini danger" onclick="delPact('${p.id}')">删除</button>
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty">还没有公约，点击右上角新增</div>`;
+
+  return `
+  <div class="page-head">
+    <h2>室友公约</h2>
+    <button class="btn primary sm" onclick="openPactModal()">＋ 新增</button>
+  </div>
+  <div class="card">${cards}</div>
+  `;
+};
+
+/* ================= 弹窗基础 ================= */
+function openModal(html){
+  $('#modal').innerHTML = html;
+  $('#mask').classList.add('show');
+}
+function closeModal(){
+  $('#mask').classList.remove('show');
+  $('#modal').innerHTML = '';
+}
+
+/* ================= 室友管理 ================= */
+function openRoommateModal(){
+  openModal(`
+    <h3 class="modal-title">室友管理</h3>
+    <div>
+      ${state.roommates.map(r => `
+        <div class="rm-row">
+          <span class="av" style="background:${colorOf(r.id)}">${r.emoji}</span>
+          <input class="rm-input" value="${esc(r.name)}" maxlength="8"
+                 onchange="renameRoommate('${r.id}', this.value)">
+          <button class="btn-mini" onclick="cycleEmoji('${r.id}')">换头像</button>
+          <button class="btn-mini danger" onclick="delRoommate('${r.id}')">删除</button>
+        </div>`).join('') || '<div class="empty">还没有室友</div>'}
+    </div>
+    <form onsubmit="addRoommate(event)" style="margin-top:14px">
+      <div class="field-row">
+        <input class="rm-input" name="name" placeholder="新室友昵称" required maxlength="8">
+        <button class="btn primary" type="submit">添加</button>
+      </div>
+    </form>
+    <div class="modal-actions">
+      <button class="btn ghost" onclick="closeModal()">完成</button>
+    </div>
+  `);
+}
+function renameRoommate(id, name){
+  const r = state.roommates.find(x => x.id === id);
+  if(r && name.trim()){ r.name = name.trim(); save(); render(); }
+}
+function cycleEmoji(id){
+  const r = state.roommates.find(x => x.id === id);
+  if(!r) return;
+  const i = EMOJIS.indexOf(r.emoji);
+  r.emoji = EMOJIS[(i + 1) % EMOJIS.length];
+  save(); openRoommateModal(); render();
+}
+function delRoommate(id){
+  if(state.roommates.length <= 1){ alert('至少保留一位室友'); return; }
+  if(!confirm('删除该室友？他参与的账单记录仍会保留。')) return;
+  state.roommates = state.roommates.filter(r => r.id !== id);
+  save(); openRoommateModal(); render();
+}
+function addRoommate(ev){
+  ev.preventDefault();
+  const name = new FormData(ev.target).get('name').trim();
+  if(!name) return;
+  const used = state.roommates.map(r => r.emoji);
+  const emoji = EMOJIS.find(e => !used.includes(e)) || EMOJIS[0];
+  state.roommates.push({id: uid('r'), name, emoji});
+  save(); ev.target.reset(); openRoommateModal(); render();
+}
+
+/* ================= 费用操作 ================= */
+function openExpenseModal(id){
+  if(!state.roommates.length){ alert('请先添加室友'); return; }
+  const e = id ? state.expenses.find(x => x.id === id) : null;
+  const inParts = rid => !e || (e.participants||[]).includes(rid);
+
+  openModal(`
+    <form onsubmit="saveExpense(event)">
+      <input type="hidden" name="id" value="${e ? e.id : ''}">
+      <h3 class="modal-title">${e ? '编辑支出' : '记一笔公共支出'}</h3>
+
+      <label class="field"><span>项目名称</span>
+        <input name="title" required maxlength="20" value="${e ? esc(e.title) : ''}" placeholder="如：本月房租 / 超市采购">
+      </label>
+
+      <div class="field-row">
+        <label class="field"><span>金额（¥）</span>
+          <input name="amount" type="number" step="0.01" min="0" required value="${e ? e.amount : ''}" placeholder="0.00">
+        </label>
+        <label class="field"><span>日期</span>
+          <input name="date" type="date" required value="${e ? e.date : todayStr()}">
+        </label>
+      </div>
+
+      <label class="field"><span>分类</span>
+        <select name="category">
+          ${['房租','水电','燃气','网络','日用','食材','聚餐','其他']
+            .map(c => `<option ${e && e.category === c ? 'selected' : ''}>${c}</option>`).join('')}
+        </select>
+      </label>
+
+      <label class="field"><span>谁垫付的</span>
+        <select name="payerId">
+          ${state.roommates.map(r => `<option value="${r.id}" ${e && e.payerId === r.id ? 'selected' : ''}>${r.emoji} ${esc(r.name)}</option>`).join('')}
+        </select>
+      </label>
+
+      <div class="field">
+        <span>参与分摊（默认全体 AA）</span>
+        <div class="chips">
+          ${state.roommates.map(r => `
+            <label class="chip">
+              <input type="checkbox" name="part" value="${r.id}" ${inParts(r.id) ? 'checked' : ''}>
+              <span>${r.emoji} ${esc(r.name)}</span>
+            </label>`).join('')}
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        ${e ? `<button type="button" class="btn danger" onclick="delExpense('${e.id}')">删除</button>` : ''}
+        <button type="button" class="btn ghost" onclick="closeModal()">取消</button>
+        <button type="submit" class="btn primary">保存</button>
+      </div>
+    </form>
+  `);
+}
+
+function saveExpense(ev){
+  ev.preventDefault();
+  const fd = new FormData(ev.target);
+  const parts = fd.getAll('part');
+  if(!parts.length){ alert('请至少选择一位参与分摊的室友'); return; }
+  const data = {
+    title: String(fd.get('title')).trim(),
+    amount: parseFloat(fd.get('amount')) || 0,
+    date: fd.get('date'),
+    category: fd.get('category'),
+    payerId: fd.get('payerId'),
+    participants: parts
+  };
+  const id = fd.get('id');
+  if(id){
+    const e = state.expenses.find(x => x.id === id);
+    if(e) Object.assign(e, data);
+  }else{
+    state.expenses.push(Object.assign({id: uid('e')}, data));
+  }
+  save(); closeModal(); render();
+}
+
+function delExpense(id){
+  if(!confirm('确定删除这笔账单吗？')) return;
+  state.expenses = state.expenses.filter(e => e.id !== id);
+  save(); closeModal(); render();
+}
+
+/* ================= 值日操作 ================= */
+function shiftWeek(delta){
+  state.weekOffset += delta;
+  save(); render();
+}
+function toggleChore(tid){
+  const idx = state.tasks.findIndex(t => t.id === tid);
+  if(idx < 0) return;
+  const key = choreKey(state.weekOffset, tid);
+  if(state.choreDone[key]){
+    delete state.choreDone[key];
+  }else{
+    const a = assigneeFor(idx, state.weekOffset);
+    state.choreDone[key] = {by: a ? a.id : null, at: Date.now()};
+  }
+  save(); render();
+}
+function openTaskModal(){
+  openModal(`
+    <h3 class="modal-title">值日任务管理</h3>
+    <form onsubmit="saveTask(event)">
+      <label class="field"><span>任务名称</span>
+        <input name="name" required maxlength="12" placeholder="如：客厅吸尘">
+      </label>
+      <label class="field"><span>图标</span>
+        <select name="emoji">
+          ${['🧹','🧽','🗑️','🚿','🍳','🧺','🪟','🛋️','🐾','🧴'].map(e => `<option>${e}</option>`).join('')}
+        </select>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn ghost" onclick="closeModal()">取消</button>
+        <button type="submit" class="btn primary">添加</button>
+      </div>
+    </form>
+    <div style="margin-top:14px">
+      ${state.tasks.map(t => `
+        <div class="row">
+          <div class="row-emoji">${t.emoji}</div>
+          <div class="row-main"><div class="row-title">${esc(t.name)}</div></div>
+          <button class="btn-mini danger" onclick="delTask('${t.id}')">删除</button>
+        </div>`).join('')}
+    </div>
+  `);
+}
+function saveTask(ev){
+  ev.preventDefault();
+  const fd = new FormData(ev.target);
+  state.tasks.push({id: uid('t'), name: String(fd.get('name')).trim(), emoji: fd.get('emoji')});
+  save(); closeModal(); render();
+}
+function delTask(tid){
+  state.tasks = state.tasks.filter(t => t.id !== tid);
+  save(); openTaskModal(); render();
+}
+
+/* ================= 物品操作 ================= */
+function changeQty(id, delta){
+  const it = state.items.find(i => i.id === id);
+  if(!it) return;
+  const before = it.qty;
+  it.qty = Math.max(0, Math.round((it.qty + delta) * 100) / 100);
+  if(it.qty === before) return;
+  state.itemLog.push({name: it.name, delta: it.qty - before, time: nowStamp()});
+  if(state.itemLog.length > 60) state.itemLog.shift();
+  save(); render();
+}
+function openItemModal(){
+  openModal(`
+    <form onsubmit="saveItem(event)">
+      <h3 class="modal-title">登记公共物品</h3>
+      <label class="field"><span>物品名称</span>
+        <input name="name" required maxlength="16" placeholder="如：洗洁精">
+      </label>
+      <div class="field-row">
+        <label class="field"><span>当前数量</span>
+          <input name="qty" type="number" step="0.5" min="0" value="1" required>
+        </label>
+        <label class="field"><span>单位</span>
+          <input name="unit" maxlength="3" value="件">
+        </label>
+      </div>
+      <label class="field"><span>补货警戒线（低于该数量提醒）</span>
+        <input name="threshold" type="number" step="0.5" min="0" value="1">
+      </label>
+      <label class="field"><span>图标</span>
+        <select name="emoji">
+          ${['🧴','🧻','🧼','🛍️','🧺','🧽','☕','🍚','💡','🔋','🧹','🪣'].map(e => `<option>${e}</option>`).join('')}
+        </select>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn ghost" onclick="closeModal()">取消</button>
+        <button type="submit" class="btn primary">保存</button>
+      </div>
+    </form>
+  `);
+}
+function saveItem(ev){
+  ev.preventDefault();
+  const fd = new FormData(ev.target);
+  state.items.push({
+    id: uid('i'),
+    name: String(fd.get('name')).trim(),
+    qty: parseFloat(fd.get('qty')) || 0,
+    unit: fd.get('unit') || '件',
+    threshold: parseFloat(fd.get('threshold')) || 0,
+    emoji: fd.get('emoji')
+  });
+  save(); closeModal(); render();
+}
+function openItemEditModal(id){
+  const it = state.items.find(i => i.id === id);
+  if(!it) return;
+  openModal(`
+    <form onsubmit="updateItem(event,'${id}')">
+      <h3 class="modal-title">编辑物品</h3>
+      <label class="field"><span>名称</span><input name="name" value="${esc(it.name)}" required maxlength="16"></label>
+      <div class="field-row">
+        <label class="field"><span>数量</span><input name="qty" type="number" step="0.5" min="0" value="${it.qty}"></label>
+        <label class="field"><span>单位</span><input name="unit" value="${esc(it.unit)}" maxlength="3"></label>
+      </div>
+      <label class="field"><span>警戒线</span><input name="threshold" type="number" step="0.5" min="0" value="${it.threshold}"></label>
+      <div class="modal-actions">
+        <button type="button" class="btn danger" onclick="delItem('${id}')">删除物品</button>
+        <button type="button" class="btn ghost" onclick="closeModal()">取消</button>
+        <button type="submit" class="btn primary">保存</button>
+      </div>
+    </form>
+  `);
+}
+function updateItem(ev, id){
+  ev.preventDefault();
+  const it = state.items.find(i => i.id === id);
+  if(!it) return;
+  const fd = new FormData(ev.target);
+  it.name = String(fd.get('name')).trim();
+  it.qty = parseFloat(fd.get('qty')) || 0;
+  it.unit = fd.get('unit') || '件';
+  it.threshold = parseFloat(fd.get('threshold')) || 0;
+  save(); closeModal(); render();
+}
+function delItem(id){
+  if(!confirm('删除该物品？')) return;
+  state.items = state.items.filter(i => i.id !== id);
+  save(); closeModal(); render();
+}
+
+/* ================= 公约操作 ================= */
+function openPactModal(){
+  if(!state.roommates.length){ alert('请先添加室友'); return; }
+  openModal(`
+    <form onsubmit="savePact(event)">
+      <h3 class="modal-title">新增室友公约</h3>
+      <label class="field"><span>公约内容</span>
+        <textarea name="text" rows="3" required maxlength="80" placeholder="如：晚上 23:00 后保持安静"></textarea>
+      </label>
+      <label class="field"><span>分类</span>
+        <select name="cat">
+          ${['卫生','噪音','访客','费用','物品','其他'].map(c => `<option>${c}</option>`).join('')}
+        </select>
+      </label>
+      <label class="field"><span>发起人</span>
+        <select name="by">
+          ${state.roommates.map(r => `<option value="${r.id}">${r.emoji} ${esc(r.name)}</option>`).join('')}
+        </select>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn ghost" onclick="closeModal()">取消</button>
+        <button type="submit" class="btn primary">发布</button>
+      </div>
+    </form>
+  `);
+}
+function savePact(ev){
+  ev.preventDefault();
+  const fd = new FormData(ev.target);
+  const by = fd.get('by');
+  state.pacts.push({
+    id: uid('p'),
+    text: String(fd.get('text')).trim(),
+    cat: fd.get('cat'),
+    by,
+    agreed: [by]
+  });
+  save(); closeModal(); render();
+}
+function toggleAgree(pid, rid){
+  const p = state.pacts.find(x => x.id === pid);
+  if(!p) return;
+  p.agreed = p.agreed || [];
+  const i = p.agreed.indexOf(rid);
+  if(i >= 0) p.agreed.splice(i,1); else p.agreed.push(rid);
+  save(); render();
+}
+function delPact(id){
+  if(!confirm('删除这条公约？')) return;
+  state.pacts = state.pacts.filter(p => p.id !== id);
+  save(); render();
+}
+
+/* ================= 启动 ================= */
+save();
+render();
+</script>
+</body>
+</html>
